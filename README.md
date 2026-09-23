@@ -46,6 +46,8 @@ Add to `.vscode/mcp.json`:
 { "servers": { "scrapingisnotacrime": { "command": "npx", "args": ["-y", "@scrapingisnotacrime/mcp"], "env": { "SCRAPINGISNOTACRIME_API_KEY": "sinac_..." } } } }
 ```
 
+Pin a version for reproducible installs instead of always resolving to the latest release: `npx -y @scrapingisnotacrime/mcp@0.1.0`.
+
 ## Choose platforms
 
 `SCRAPINGISNOTACRIME_PLATFORMS` is an optional, comma-separated, case-insensitive list of platform ids: `instagram, tiktok, youtube, appstore, github, hackernews, bluesky, twitch, linktree`. Leave it unset (or empty) to get all 34 tools.
@@ -67,8 +69,8 @@ Tool names are `<platform>_<method>`. Arguments marked `?` are optional.
 | `instagram_media_by_id` | One post's details, given its owner and numeric media id | `username`, `media_id` |
 | `instagram_media` | One post, video or carousel's details, from its shortcode | `shortcode` |
 | `instagram_download` | Every downloadable asset (videos, images, thumbnails) behind a post, reel or carousel | `shortcode` |
-| `instagram_shortcode_to_id` | Converts a post shortcode into its numeric media id (computed locally) | `shortcode` |
-| `instagram_id_to_shortcode` | Converts a numeric media id into its shortcode (computed locally) | `media_id` |
+| `instagram_shortcode_to_id` | Converts a post shortcode into its numeric media id (no call to Instagram, but still one API request) | `shortcode` |
+| `instagram_id_to_shortcode` | Converts a numeric media id into its shortcode (no call to Instagram, but still one API request) | `media_id` |
 | `instagram_reel` | One reel's details: views, likes, comments, caption, video URL, audio | `shortcode` |
 | `tiktok_profile` | Public profile: nickname, bio, follower/following/like/video counts, verification, privacy | `username` |
 | `tiktok_video` | One video's details: view/like/share/comment counts, duration, cover, audio | `video_id` |
@@ -80,9 +82,9 @@ Tool names are `<platform>_<method>`. Arguments marked `?` are optional.
 | `github_following` | One page of the accounts a user follows (paginated) | `handle`, `limit?`, `page?` |
 | `github_repositories` | One page of a user's public repositories (paginated) | `handle`, `limit?`, `page?` |
 | `github_search_repositories` | One page of repositories matching a GitHub search query (paginated) | `q`, `limit?`, `page?` |
-| `github_trending` | Currently trending repositories over a daily, weekly or monthly window | `since?`, `language?`, `limit?` |
+| `github_trending` | Currently trending repositories over a daily, weekly or monthly window (not paginated) | `since?`, `language?`, `limit?` |
 | `hackernews_feed` | One page of a feed — top, new, best, ask, show or job (paginated) | `feed`, `limit?`, `page?` |
-| `hackernews_item` | One item (story, comment, job or poll) with its full nested comment tree | `id` |
+| `hackernews_item` | One item (story, comment, job or poll) with its full nested comment tree — can be very large for popular threads; prefer `hackernews_search`/`hackernews_feed` for an overview | `id` |
 | `hackernews_search` | One page of stories matching a search term (paginated) | `q`, `limit?`, `page?` |
 | `hackernews_user` | A user's karma, about text, creation date and submission count | `username` |
 | `hackernews_submissions` | One page of a user's submitted stories, newest first (paginated) | `username`, `limit?`, `page?` |
@@ -95,11 +97,11 @@ Tool names are `<platform>_<method>`. Arguments marked `?` are optional.
 
 ## Credits
 
-Each tool call is one API request and costs one credit. Paginated tools (`instagram_posts`, `bluesky_posts`, `appstore_reviews`, the GitHub listings and the Hacker News listings) return a single page per call — the agent decides whether to fetch the next one, so no tool call auto-paginates behind your back. Calls that fail with a rate-limit (429) or upstream (502) error do not consume a credit.
+Each successful tool call costs one credit; failed calls (any 4xx/5xx error) are not charged, and calls rejected for invalid arguments never reach the API. Paginated tools (`instagram_posts`, `bluesky_posts`, `appstore_reviews`, the GitHub listings and the Hacker News listings) return a single page per call — the agent decides whether to fetch the next one, so no tool call auto-paginates behind your back.
 
 ## Troubleshooting
 
-- **Missing `SCRAPINGISNOTACRIME_API_KEY`** or **unknown platform id in `SCRAPINGISNOTACRIME_PLATFORMS`**: the server logs a clear message to stderr and exits before connecting — nothing reaches stdout. Check your MCP client's logs panel (Claude Desktop: Settings → Developer → MCP Logs; Claude Code: `claude mcp logs`) for the message.
+- **Missing `SCRAPINGISNOTACRIME_API_KEY`** or **unknown platform id in `SCRAPINGISNOTACRIME_PLATFORMS`**: the server logs a clear message to stderr and exits before connecting — nothing reaches stdout. In Claude Code, run `claude mcp get scrapingisnotacrime` or use `/mcp` to check the server's status, or start Claude Code with `--debug` to see the MCP logs. In Claude Desktop, check its MCP log files (Settings → Developer, or the app's logs folder).
 - **"Out of credits"**: a tool call returned `isError: true` with a message pointing to https://scrapingisnotacrime.com/#pricing. Add credits or wait for your plan to renew.
 
 ## Releases and changelog
