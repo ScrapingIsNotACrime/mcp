@@ -11,8 +11,11 @@ describe("parity with the SDK", () => {
     for (const [namespace, resource] of Object.entries(client)) {
       if (typeof resource !== "object" || resource === null) continue;
       for (const method of Object.getOwnPropertyNames(Object.getPrototypeOf(resource))) {
-        // `list` is a TypeScript-private helper on paginated resources, not public API.
-        if (method === "constructor" || method === "list") continue;
+        if (method === "constructor") continue;
+        // `list` is a TypeScript-private helper on github and hackernews, not public API.
+        // Excluding it only for these two resources keeps a future public `list` method
+        // on another resource from being silently swallowed.
+        if (method === "list" && (namespace === "github" || namespace === "hackernews")) continue;
         expected.push(`${namespace}_${snake(method)}`);
       }
     }
