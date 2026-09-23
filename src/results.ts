@@ -36,7 +36,7 @@ export function describeError(error: unknown): string {
     case "BadRequestError":
       return `Invalid request: ${error.message}`;
     case "AuthenticationError":
-      return `Invalid API key: ${error.message} — check SCRAPINGISNOTACRIME_API_KEY.`;
+      return "Invalid API key — check SCRAPINGISNOTACRIME_API_KEY.";
     case "QuotaExceededError":
       return `Out of credits — see ${PRICING_URL}`;
     case "RateLimitError":

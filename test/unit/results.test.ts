@@ -37,7 +37,7 @@ describe("describeError", () => {
   it.each([
     [new NotFoundError("Profile not found.", { status: 404 }), "Not found: Profile not found."],
     [new BadRequestError("limit must be <= 100", { status: 400 }), "Invalid request: limit must be <= 100"],
-    [new AuthenticationError("Invalid API key.", { status: 401 }), "Invalid API key: Invalid API key. — check SCRAPINGISNOTACRIME_API_KEY."],
+    [new AuthenticationError("Invalid API key.", { status: 401 }), "Invalid API key — check SCRAPINGISNOTACRIME_API_KEY."],
     [new QuotaExceededError("plan.quota_exceeded", { status: 402 }), "Out of credits — see https://scrapingisnotacrime.com/#pricing"],
     [new RateLimitError("Instagram rate limit reached.", { status: 429 }), "Rate limited by the source platform; try again later. (Instagram rate limit reached.)"],
     [new UpstreamError("Upstream failed.", { status: 502 }), "The source platform failed; try again later. (Upstream failed.)"],
