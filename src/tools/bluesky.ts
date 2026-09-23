@@ -8,7 +8,7 @@ export const blueskyTools = [
     name: "bluesky_profile",
     platform: "bluesky",
     title: "Bluesky profile",
-    description: "Public Bluesky profile: display name, description, avatar, banner, follower/following/post counts.",
+    description: "Public Bluesky profile: display name, description, avatar, banner, follower/following/post counts. Use this first to check a handle exists before calling bluesky_posts.",
     input: { handle },
     run: (client, { handle }) => client.bluesky.profile(handle),
   }),

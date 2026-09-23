@@ -20,7 +20,7 @@ export const appstoreTools = [
     name: "appstore_reviews",
     platform: "appstore",
     title: "App Store reviews (paginated)",
-    description: "One page of the most recent customer reviews of an app. Apple caps reviews at 10 pages; use next_page while has_more is true. Each page costs one request.",
+    description: "One page of the most recent customer reviews of an app. Use next_page when it is present to get the next page; it is absent on the last page, and Apple caps reviews at 10 pages regardless. Each page costs one request.",
     input: {
       app_id: z.string().regex(/^\d+$/).describe("Numeric App Store app id (the id from appstore_search), e.g. 389801252"),
       country,
